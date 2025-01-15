@@ -8,7 +8,7 @@ const dirStylesToGet = 'styles';
 const destStylesToGet = path.join(dir, dirStylesToGet);
 const dirComponentsToGet = 'components';
 const destComponentsToGet = path.join(dir, dirComponentsToGet);
-const fileStyles = 'styles.css';
+const fileStyles = 'style.css';
 const fileHtml = 'index.html';
 const fileTemplate = 'template.html';
 const destTemplateToGet = path.join(dir, fileTemplate);
@@ -21,15 +21,19 @@ const destFileHtml = path.join(destFolderToMake, fileHtml);
 const rs = fs.createReadStream;
 const ws = fs.createWriteStream;
 
-fs.mkdir(destFolderToMake, () => {});
-
-fs.readdir(destStylesToGet, (err, files) => {
-  for (let file of files) {
-    const filePath = path.join(destStylesToGet, file);
-    rs(filePath).on('data', (chunk) => {
-      ws(destFileStyles).write(chunk.toString());
+fs.mkdir(destFolderToMake, () => {
+  fs.writeFile(destFileStyles, '', () => {
+    fs.readdir(destStylesToGet, (err, files) => {
+      for (let file of files) {
+        if (path.extname(file).slice(1) === 'css') {
+          const filePath = path.join(destStylesToGet, file);
+          rs(filePath).on('data', (chunk) => {
+            fs.appendFile(destFileStyles, chunk.toString(), () => {});
+          });
+        };    
+      };
     });
-  }
+  });
 });
 
 fs.cp(destFolderAssets, destFolderToMakeAssets, { recursive: true }, () => {});

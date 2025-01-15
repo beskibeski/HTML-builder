@@ -9,13 +9,18 @@ const destStyles = path.join(dir, dirStyles);
 const fileToCompile = 'bundle.css';
 const destFileCompile = path.join(destCompile, fileToCompile);
 const rs = fs.createReadStream;
-const ws = fs.createWriteStream(destFileCompile);
 
-fs.readdir(destStyles, (err, files) => {
-  for (let file of files) {
-    const filePath = path.join(destStyles, file);
-    rs(filePath).on('data', (chunk) => {
-      ws.write(chunk.toString());
+fs.mkdir(destCompile, () => {
+  fs.writeFile(destFileCompile, '', () => {
+    fs.readdir(destStyles, (err, files) => {
+      for (let file of files) {
+        if (path.extname(file).slice(1) === 'css') {
+          const filePath = path.join(destStyles, file);        
+          rs(filePath).on('data', (chunk) => {
+            fs.appendFile(destFileCompile, chunk.toString(), () => {});
+          });
+        };    
+      };
     });
-  }
+  });
 });
