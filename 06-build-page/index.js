@@ -27,11 +27,16 @@ fs.mkdir(destFolderToMake, () => {
       for (let file of files) {
         if (path.extname(file).slice(1) === 'css') {
           const filePath = path.join(destStylesToGet, file);
-          rs(filePath).on('data', (chunk) => {
-            fs.appendFile(destFileStyles, chunk.toString(), () => {});
+          let data = '';
+          const rsFile = rs(filePath);
+          rsFile.on('data', (chunk) => {
+            data += chunk.toString();
           });
-        };    
-      };
+          rsFile.on('end', () => {
+            fs.appendFile(destFileStyles, data + '\n', () => {});
+          });
+        }
+      }
     });
   });
 });

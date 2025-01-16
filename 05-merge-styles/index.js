@@ -15,12 +15,17 @@ fs.mkdir(destCompile, () => {
     fs.readdir(destStyles, (err, files) => {
       for (let file of files) {
         if (path.extname(file).slice(1) === 'css') {
-          const filePath = path.join(destStyles, file);        
-          rs(filePath).on('data', (chunk) => {
-            fs.appendFile(destFileCompile, chunk.toString(), () => {});
+          const filePath = path.join(destStyles, file);
+          let data = '';
+          const rsFile = rs(filePath);
+          rsFile.on('data', (chunk) => {
+            data += chunk.toString();
           });
-        };    
-      };
+          rsFile.on('end', () => {
+            fs.appendFile(destFileCompile, data + '\n', () => {});
+          });
+        }
+      }
     });
   });
 });
