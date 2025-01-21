@@ -12,7 +12,7 @@ fs.readdir(folder, (err, files) => {
       if (!fileStat.isDirectory()) {
         const filePath = path.join(folder, file);
         const fileBaseName = path.basename(filePath);
-        const fileSize = fileStat.size / 1000;
+        const fileSize = (fileStat.size / 1024).toFixed(3);
         stdout.write(
           `${fileBaseName.slice(0, fileBaseName.lastIndexOf('.'))} - ${path
             .extname(filePath)
